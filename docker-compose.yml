@@ -1,0 +1,38 @@
+services:
+  pokedex-mysql:
+    image: "mysql:latest"
+    container_name: pokedex-mysql
+    ports:
+      - 3307:3306
+    environment:
+       MYSQL_ROOT_PASSWORD: root
+       MYSQL_DATABASE: pokedex
+    volumes:
+      - ./server/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+
+  pokedex-app:
+    image: "fedd911/pokedex-project-backend:latest"
+    container_name: pokedex-app
+    environment:
+       MYSQL_HOST: pokedex-mysql
+       MYSQL_USER: root
+       MYSQL_PASSWORD: root
+       MYSQL_DATABASE: pokedex
+       MYSQL_PORT: 3306
+    ports:
+      - 8080:8080
+    depends_on:
+      - pokedex-mysql
+    links:
+      - pokedex-mysql
+    command: node --max-old-space-size=2048 app.js
+  
+  pokedex-frontend:
+    image: "fedd911/pokedex-project-frontend:latest"
+    container_name: pokedex-frontend
+    ports:
+      - 9000:80
+    depends_on: 
+      - pokedex-app
+    links:
+      - pokedex-app

@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pokedex-backend-deployment
+  labels:
+    app: pokedex-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pokedex-backend
+  template:
+    metadata:
+      labels:
+        app: pokedex-backend
+    spec:
+      containers:
+        - name: pokedex-backend
+          image: fedd911/pokedex-project-backend:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: MYSQL_USER
+              valueFrom:
+                secretKeyRef:
+                  name: pokedex-backend-secret
+                  key: mysql_user
+            - name: MYSQL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pokedex-backend-secret
+                  key: mysql_password
+            - name: MYSQL_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: pokedex-configmap
+                  key: mysql_database
+            - name: MYSQL_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: pokedex-configmap
+                  key: mysql_host
+            - name: MYSQL_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: pokedex-configmap
+                  key: mysql_port
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "500m"
+            limits:
+              memory: "1024Mi"
+              cpu: "0.75"
+          command: ["node", "--max-old-space-size=2048", "app.js"]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pokedex-backend-service
+spec:
+  selector:
+    app: pokedex-backend
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080

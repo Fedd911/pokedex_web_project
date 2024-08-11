@@ -1,0 +1,9 @@
+CREATE DATABASE IF NOT EXISTS pokedex;
+USE pokedex;
+
+CREATE TABLE IF NOT EXISTS pokemons (
+    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL,
+    image varchar(255) NOT NULL
+);
+

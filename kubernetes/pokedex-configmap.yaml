@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pokedex-configmap
+data:
+  mysql_database: pokedex
+  mysql_host: mysql-service
+  mysql_port: "3306"
+  schema.sql: |
+    CREATE DATABASE IF NOT EXISTS pokedex;
+    USE pokedex;
+
+    CREATE TABLE IF NOT EXISTS pokemons (
+        id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+        name VARCHAR(255) NOT NULL,
+        image varchar(255) NOT NULL
+    );
+
+    INSERT INTO pokemons (name, image)
+    VALUES
+    ('Pikachu', 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/female/25.png');
